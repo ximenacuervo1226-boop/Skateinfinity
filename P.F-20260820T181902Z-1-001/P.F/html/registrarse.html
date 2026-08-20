@@ -18,21 +18,21 @@
                     <h2>REGISTRAR USUARIO</h2>
                 </div>
                 <div class="card-body">
-                    <form onsubmit="event.preventDefault(); window.location.href='iniciarsesion.html';">
-                        <!-- Nombre Completo y Usuario -->
+                    <form onsubmit="return validarFormulario(event);">
                         <div class="form-row">
                             <div class="input-group">
-                                <input type="text" placeholder="Nombre Completo..." required>
+                                <input type="text" placeholder="Nombre Completo..." oninput="this.value = this.value.toLowerCase()" required>
                             </div>
                             <div class="input-group">
-                                <input type="text" placeholder="Usuario..." required>
+                                <input type="text" id="usuario" placeholder="Usuario..." 
+                                       pattern="[a-zA-Z0-9]+" 
+                                       title="El usuario solo puede contener letras y números, sin caracteres especiales." required>
                             </div>
                         </div>
 
-                        <!-- Teléfono y Fecha de Nacimiento -->
                         <div class="form-row">
                             <div class="input-group">
-                                <input type="tel" placeholder="Teléfono..." required>
+                                <input type="tel" placeholder="Teléfono..." oninput="this.value = this.value.replace(/[^0-9]/g, '')" inputmode="numeric" required>
                             </div>
                             <div class="input-group">
                                 <input type="text" placeholder="Fecha de Nacimiento..." onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" required>
@@ -41,20 +41,27 @@
 
                         <div class="form-row">
                             <div class="input-group">
-                                <input type="email" placeholder="Correo Electrónico..." required>
+                                <input type="email" id="email" placeholder="Correo Electrónico..." required>
                             </div>
                             <div class="input-group">
-                                <input type="email" placeholder="Confirmar Correo Electrónico..." required>
+                                <input type="email" id="confirmEmail" placeholder="Confirmar Correo Electrónico..." required>
                             </div>
                         </div>
 
-                        <!-- Contraseña y Confirmar Contraseña -->
                         <div class="form-row">
                             <div class="input-group">
-                                <input type="password" placeholder="Contraseña..." required>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" placeholder="Contraseña..." 
+                                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" 
+                                           title="La contraseña debe tener más de 8 caracteres, al menos una mayúscula, una minúscula, un número y un símbolo." required>
+                                    <button type="button" class="toggle-password" onclick="toggleVisibility('password', this)" title="Mostrar contraseña">🙈</button>
+                                </div>
                             </div>
                             <div class="input-group">
-                                <input type="password" placeholder="Confirmar Contraseña..." required>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirmPassword" placeholder="Confirmar Contraseña..." required>
+                                    <button type="button" class="toggle-password" onclick="toggleVisibility('confirmPassword', this)" title="Mostrar contraseña">🙈</button>
+                                </div>
                             </div>
                         </div>
 
@@ -71,5 +78,42 @@
             <p>&copy; 2026 Skate&infin;. Todos los derechos reservados.</p>
         </footer>
     </div>
+
+    <script>
+        function toggleVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🐵";
+                btn.title = "Ocultar contraseña";
+            } else {
+                input.type = "password";
+                btn.textContent = "🙈";
+                btn.title = "Mostrar contraseña";
+            }
+        }
+
+        function validarFormulario(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const confirmEmail = document.getElementById('confirmEmail').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (email !== confirmEmail) {
+                alert("Los correos electrónicos no coinciden.");
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Las contraseñas no coinciden.");
+                return false;
+            }
+
+            window.location.href = 'iniciarsesion.html';
+            return true;
+        }
+    </script>
 </body>
 </html>
