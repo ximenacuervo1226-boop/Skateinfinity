@@ -1,8 +1,11 @@
- const buscador = document.querySelector("buscador"); //barra
- const productos = document.querySelectorAll(".producto"); //busca todos los elementos con la clase producto
- const mensaje = document.getElementById("sinResultado"); //busca mensaje cuando no hay resultado
+const buscador = document.querySelector(".search-input"); // barra de búsqueda
 
- buscador.addEventListener("input", function () { //addEventListener: escuchar un evento
+const productos = document.querySelectorAll(".product-card"); // busca todos los productos
+
+const mensaje = document.getElementById("sinResultado"); // mensaje cuando no hay resultados
+
+
+buscador.addEventListener("input", function () { // escucha cuando escribimos en el buscador
 
     // Guarda el texto escrito por el usuario
     // toLowerCase() convierte todo a minúsculas
@@ -18,49 +21,34 @@
     productos.forEach(producto => {
 
         // Busca el nombre del producto
-        // textContent obtiene el texto
-        // toLowerCase() convierte el texto a minúsculas
         const nombre = producto.querySelector(".nombre").textContent.toLowerCase();
 
-        // Busca la categoría del producto
-        const categoria = producto.querySelector(".categoria").textContent.toLowerCase();
-
-        // Busca la descripción del producto
-        const descripcion = producto.querySelector(".descripcion").textContent.toLowerCase();
+        // Obtiene la categoría del producto
+        // dataset.categoria obtiene el valor de data-categoria
+        const categoria = producto.dataset.categoria.toLowerCase();
 
 
-        // "includes()" revisa si el texto escrito está dentro
-        // del nombre, categoría o descripción
-
+        // Revisa si lo escrito coincide con el nombre o la categoría
         if (
-
             nombre.includes(texto) ||
-            categoria.includes(texto) ||
-            descripcion.includes(texto)
-
+            categoria.includes(texto)
         ) {
 
-            // Si encontró coincidencia...
-            // display = "block" hace que el producto sea visible
-            producto.style.display = "block";
+            // Muestra el producto
+            producto.style.display = "";
 
-            // Suma 1 al contador de productos encontrados
+            // Suma 1 al contador
             encontrados++;
 
         } else {
 
-            // Si no coincide con la búsqueda...
-            // display = "none" lo oculta
+            // Oculta el producto
             producto.style.display = "none";
-
         }
-
     });
 
 
-    // Cuando termina de revisar todos los productos...
-
-    // Si no encontró ninguno...
+    // Si no encontró ningún producto
     if (encontrados === 0) {
 
         // Muestra el mensaje
@@ -68,10 +56,8 @@
 
     } else {
 
-        // Si sí encontró productos...
         // Oculta el mensaje
         mensaje.style.display = "none";
-
     }
 
 });
