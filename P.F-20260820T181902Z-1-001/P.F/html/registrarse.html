@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skate∞ - Registrar</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1 class="logo">Skate&infin;</h1>
+        </header>
+
+        <main class="login-wrapper">
+            <div class="login-card register-card">
+                <div class="card-header">
+                    <h2>REGISTRAR USUARIO</h2>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); window.location.href='iniciarsesion.html';">
+                        <!-- Nombre Completo y Usuario -->
+                        <div class="form-row">
+                            <div class="input-group">
+                                <input type="text" placeholder="Nombre Completo..." required>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" placeholder="Usuario..." required>
+                            </div>
+                        </div>
+
+                        <!-- Teléfono y Fecha de Nacimiento -->
+                        <div class="form-row">
+                            <div class="input-group">
+                                <input type="tel" placeholder="Teléfono..." required>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" placeholder="Fecha de Nacimiento..." onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="input-group">
+                                <input type="email" placeholder="Correo Electrónico..." required>
+                            </div>
+                            <div class="input-group">
+                                <input type="email" placeholder="Confirmar Correo Electrónico..." required>
+                            </div>
+                        </div>
+
+                        <!-- Contraseña y Confirmar Contraseña -->
+                        <div class="form-row">
+                            <div class="input-group">
+                                <input type="password" placeholder="Contraseña..." required>
+                            </div>
+                            <div class="input-group">
+                                <input type="password" placeholder="Confirmar Contraseña..." required>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-register" onclick="window.location.href='iniciarsesion.html';">Regresar</button>
+                            <button type="submit" class="btn btn-login">Registrarse</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 Skate&infin;. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>
