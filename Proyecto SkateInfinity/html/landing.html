@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Skate∞ - Inicio</title>
+
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+
+        /* ==============================
+           LANDING PAGE - SKATE∞
+           ============================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #141414;
+        }
+
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* ==============================
+           ENCABEZADO
+           ============================== */
+
+        .landing-header {
+            height: 80px;
+            background: #141414;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            /* Logo un poco más hacia la izquierda */
+            padding: 0 35px 0 25px;
+
+            /* Quitamos la línea roja */
+            border-bottom: none;
+
+            position: relative;
+            z-index: 20;
+        }
+
+
+        /* ==============================
+           LOGO
+           ============================== */
+
+        .landing-logo {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: bold;
+            text-decoration: none;
+
+            display: inline-block;
+
+            transition:
+                transform 0.4s ease,
+                color 0.4s ease,
+                text-shadow 0.4s ease;
+        }
+
+        /* Animación del logo */
+
+        .landing-logo:hover {
+            color: #e92a43;
+            transform: scale(1.08) rotate(-2deg);
+
+            text-shadow:
+                0 0 5px rgba(233, 42, 67, 0.7),
+                0 0 15px rgba(233, 42, 67, 0.5),
+                0 0 25px rgba(233, 42, 67, 0.3);
+        }
+
+
+        /* ==============================
+           NAVEGACIÓN
+           ============================== */
+
+        .landing-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .landing-nav a {
+            text-decoration: none;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+
+            transition:
+                background 0.3s ease,
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .landing-nav a:hover {
+            background: #e92a43;
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 5px 15px rgba(233, 42, 67, 0.3);
+        }
+
+        .landing-btn-login {
+            border: 1px solid #ffffff;
+        }
+
+        .landing-btn-register {
+            background: #e92a43;
+        }
+
+
+        /* ==============================
+           CARRUSEL / HERO
+           ============================== */
+
+        .landing-hero {
+            flex: 1;
+            min-height: 600px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+            padding: 70px 30px;
+
+            position: relative;
+            overflow: hidden;
+
+            /* Fondo oscuro */
+            background: #111111;
+        }
+
+
+        /* Imágenes del carrusel */
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            opacity: 0;
+
+            transition: opacity 1s ease;
+
+            z-index: 0;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+
+        /* Oscurece las imágenes para que el texto se vea */
+
+        .landing-hero::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.58),
+                    rgba(0, 0, 0, 0.72)
+                );
+
+            z-index: 1;
+        }
+
+
+        /* ==============================
+           CONTENIDO DEL HERO
+           ============================== */
+
+        .landing-hero-content {
+            max-width: 850px;
+
+            color: #ffffff;
+
+            position: relative;
+            z-index: 5;
+
+            animation: aparecer 1s ease;
+        }
+
+
+        /* Animación de entrada */
+
+        @keyframes aparecer {
+
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        .landing-hero h1 {
+            font-size: 70px;
+
+            margin: 0 0 15px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+            text-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .landing-hero h2 {
+            font-size: 28px;
+
+            margin: 0 0 20px;
+
+            color: #ffffff;
+        }
+
+        .landing-hero p {
+            font-size: 18px;
+
+            line-height: 1.6;
+
+            max-width: 650px;
+
+            margin: 0 auto 30px;
+
+            color: #eeeeee;
+        }
+
+
+        /* ==============================
+           BOTÓN PRINCIPAL
+           ============================== */
+
+        .landing-main-btn {
+            display: inline-block;
+
+            background: #e92a43;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            padding: 14px 35px;
+
+            border-radius: 6px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            transition:
+                transform 0.3s ease,
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .landing-main-btn:hover {
+
+            background: #ff3652;
+
+            transform: translateY(-4px) scale(1.03);
+
+            box-shadow:
+                0 8px 25px rgba(233, 42, 67, 0.45);
+        }
+
+
+        /* ==============================
+           BOTONES DEL CARRUSEL
+           ============================== */
+
+        .carousel-btn {
+
+            position: absolute;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            z-index: 10;
+
+            width: 45px;
+            height: 45px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: rgba(0, 0, 0, 0.55);
+
+            color: white;
+
+            font-size: 28px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+
+            background: #e92a43;
+
+            transform:
+                translateY(-50%)
+                scale(1.1);
+        }
+
+        .carousel-prev {
+            left: 25px;
+        }
+
+        .carousel-next {
+            right: 25px;
+        }
+
+
+        /* ==============================
+           INDICADORES
+           ============================== */
+
+        .carousel-indicators {
+
+            position: absolute;
+
+            bottom: 25px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: 10;
+
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .carousel-dot {
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.5);
+
+            cursor: pointer;
+
+            transition:
+                width 0.3s ease,
+                background 0.3s ease;
+        }
+
+        .carousel-dot.active {
+
+            width: 25px;
+
+            border-radius: 10px;
+
+            background: #e92a43;
+        }
+
+
+        /* ==============================
+           CATEGORÍAS
+           ============================== */
+
+           .landing-categories {
+    background: linear-gradient(
+        to bottom,
+        #c71a31 0%,
+        #ae1529 45%,
+        #080808 100%
+    );
+
+    padding: 55px 30px;
+
+    text-align: center;
+}
+
+        .landing-categories h2 {
+
+            color: #ffffff;
+
+            font-size: 28px;
+
+            margin-bottom: 30px;
+        }
+
+        .landing-category-grid {
+
+            max-width: 1000px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 15px;
+        }
+
+        .landing-category {
+
+            background: #222222;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            padding: 22px 10px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+
+            border: 1px solid #333333;
+
+            transition:
+                background 0.3s ease,
+                border-color 0.3s ease,
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .landing-category:hover {
+
+            background: #e92a43;
+
+            border-color: #e92a43;
+
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 8px 20px rgba(233, 42, 67, 0.25);
+        }
+
+
+        /* ==============================
+   QUIÉNES SOMOS
+   ============================== */
+
+.landing-about {
+    background: #141414;
+    color: #ffffff;
+    text-align: center;
+    padding: 60px 30px;
+}
+
+
+/* Cuadro negro con borde rojo */
+
+.landing-about-content {
+    max-width: 800px;
+    margin: auto;
+
+    background: #0d0d0d;
+
+    padding: 40px 45px;
+
+    border: 1px solid #e92a43;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 0 8px rgba(233, 42, 67, 0.45),
+        0 0 20px rgba(233, 42, 67, 0.15);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* Pequeño efecto al pasar el mouse */
+
+.landing-about-content:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 0 10px rgba(233, 42, 67, 0.65),
+        0 0 30px rgba(233, 42, 67, 0.25);
+}
+
+
+.landing-about h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+
+.landing-about p {
+    font-size: 17px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+
+        /* ==============================
+           FOOTER
+           ============================== */
+
+        .landing-footer {
+
+            background: #0d0d0d;
+
+            color: #888888;
+
+            text-align: center;
+
+            padding: 20px;
+
+            font-size: 13px;
+
+            /* Quitamos cualquier línea */
+            border-top: none;
+        }
+
+        .landing-footer p {
+
+            margin: 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="landing-page">
+
+
+    <!-- ==============================
+         ENCABEZADO
+         ============================== -->
+
+    <header class="landing-header">
+
+        <a href="landing.html" class="landing-logo">
+            Skate&infin;
+        </a>
+
+        <nav class="landing-nav">
+
+            <a href="iniciarsesion.html"
+               class="landing-btn-login">
+                Iniciar sesión
+            </a>
+
+            <a href="registrarse.html"
+               class="landing-btn-register">
+                Registrarme
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ==============================
+         SECCIÓN PRINCIPAL
+         ============================== -->
+
+    <main>
+
+        <section class="landing-hero">
+
+
+            <!-- ==============================
+                 IMÁGENES DEL CARRUSEL
+                 ============================== -->
+
+            <!--
+                Estas imágenes son solo ejemplos.
+                Pueden reemplazarlas por las imágenes
+                de productos que ya tienen en su proyecto.
+            -->
+
+            <img
+                src="../img/camiseta.jpg"
+                class="hero-slide active"
+                alt="Colección Skate∞">
+
+            <img
+                src="../img/buzo.jpg"
+                class="hero-slide"
+                alt="Colección de buzos Skate∞">
+
+            <img
+                src="../img/chaqueta.jpg"
+                class="hero-slide"
+                alt="Colección de chaquetas Skate∞">
+
+            <img
+                src="../img/gorra.jpg"
+                class="hero-slide"
+                alt="Accesorios Skate∞">
+
+
+            <!-- Flecha anterior -->
+
+            <button
+                class="carousel-btn carousel-prev"
+                id="carouselPrev">
+                ‹
+            </button>
+
+
+            <!-- Flecha siguiente -->
+
+            <button
+                class="carousel-btn carousel-next"
+                id="carouselNext">
+                ›
+            </button>
+
+
+            <!-- Indicadores -->
+
+            <div class="carousel-indicators">
+
+                <span
+                    class="carousel-dot active"
+                    data-slide="0">
+                </span>
+
+                <span
+                    class="carousel-dot"
+                    data-slide="1">
+                </span>
+
+                <span
+                    class="carousel-dot"
+                    data-slide="2">
+                </span>
+
+                <span
+                    class="carousel-dot"
+                    data-slide="3">
+                </span>
+
+            </div>
+
+
+            <!-- ==============================
+                 CONTENIDO DEL HERO
+                 ============================== -->
+
+            <div class="landing-hero-content">
+
+                <h1>Skate&infin;</h1>
+
+                <h2>VISTE TU ESTILO</h2>
+
+                <p>
+                    Descubre nuestra colección de ropa urbana,
+                    accesorios y prendas inspiradas en la cultura
+                    skate. Encuentra tu estilo y hazlo único.
+                </p>
+
+                <a href="principal.html"
+                   class="landing-main-btn">
+
+                    Explorar colección
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==============================
+             CATEGORÍAS
+             ============================== -->
+
+        <section class="landing-categories">
+
+            <h2>
+                Explora nuestras categorías
+            </h2>
+
+            <div class="landing-category-grid">
+
+                <a
+                    href="categorias.html?cat=camisas"
+                    class="landing-category">
+
+                    Camisas
+
+                </a>
+
+                <a
+                    href="categorias.html?cat=buzos"
+                    class="landing-category">
+
+                    Buzos
+
+                </a>
+
+                <a
+                    href="categorias.html?cat=chaquetas"
+                    class="landing-category">
+
+                    Chaquetas
+
+                </a>
+
+                <a
+                    href="categorias.html?cat=pantalones"
+                    class="landing-category">
+
+                    Pantalones
+
+                </a>
+
+                <a
+                    href="categorias.html?cat=zapatos"
+                    class="landing-category">
+
+                    Zapatos
+
+                </a>
+
+                <a
+                    href="categorias.html?cat=gorras"
+                    class="landing-category">
+
+                    Gorras
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==============================
+             QUIÉNES SOMOS
+             ============================== -->
+
+        <section class="landing-about">
+
+            <div class="landing-about-content">
+
+                <h2>
+                    ¿Quiénes somos?
+                </h2>
+
+                <p>
+                    En Skate&infin; nos apasiona la moda.
+                    Creamos un espacio donde puedes
+                    encontrar ropa y accesorios con estilo,
+                    personalidad y calidad.
+                    Queremos que cada persona pueda expresar
+                    su estilo de una manera única.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==============================
+         FOOTER
+         ============================== -->
+
+    <footer class="landing-footer">
+
+        <p>
+            Skate&infin; &copy; 2026.
+            Todos los derechos reservados.
+        </p>
+
+    </footer>
+
+
+</div>
+
+
+<!-- ==============================
+     JAVASCRIPT DEL CARRUSEL
+     ============================== -->
+
+<script>
+
+    /* Obtenemos todas las imágenes */
+
+    const slides =
+        document.querySelectorAll(".hero-slide");
+
+
+    /* Obtenemos los puntos */
+
+    const dots =
+        document.querySelectorAll(".carousel-dot");
+
+
+    /* Botones */
+
+    const nextButton =
+        document.getElementById("carouselNext");
+
+    const prevButton =
+        document.getElementById("carouselPrev");
+
+
+    /* Slide actual */
+
+    let currentSlide = 0;
+
+
+    /* ==============================
+       MOSTRAR SLIDE
+       ============================== */
+
+    function mostrarSlide(numero) {
+
+        slides.forEach(slide => {
+
+            slide.classList.remove("active");
+
+        });
+
+
+        dots.forEach(dot => {
+
+            dot.classList.remove("active");
+
+        });
+
+
+        slides[numero].classList.add("active");
+
+        dots[numero].classList.add("active");
+
+        currentSlide = numero;
+
+    }
+
+
+    /* ==============================
+       SIGUIENTE
+       ============================== */
+
+    function siguienteSlide() {
+
+        currentSlide++;
+
+        if (currentSlide >= slides.length) {
+
+            currentSlide = 0;
+
+        }
+
+        mostrarSlide(currentSlide);
+
+    }
+
+
+    /* ==============================
+       ANTERIOR
+       ============================== */
+
+    function anteriorSlide() {
+
+        currentSlide--;
+
+        if (currentSlide < 0) {
+
+            currentSlide =
+                slides.length - 1;
+
+        }
+
+        mostrarSlide(currentSlide);
+
+    }
+
+
+    /* ==============================
+       BOTONES
+       ============================== */
+
+    nextButton.addEventListener(
+        "click",
+        siguienteSlide
+    );
+
+    prevButton.addEventListener(
+        "click",
+        anteriorSlide
+    );
+
+
+    /* ==============================
+       PUNTOS
+       ============================== */
+
+    dots.forEach(dot => {
+
+        dot.addEventListener("click", function () {
+
+            const numero =
+                parseInt(this.dataset.slide);
+
+            mostrarSlide(numero);
+
+        });
+
+    });
+
+
+    /* ==============================
+       CAMBIO AUTOMÁTICO
+       ============================== */
+
+    setInterval(
+        siguienteSlide,
+        5000
+    );
+
+</script>
+
+
+</body>
+
+</html>
