@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             imgSrc: imgSrc,
             precio: parsePrecio(precioTexto),
             precioTexto: precioTexto,
-            categoria: categoria
+            categoria: categoria,
+            card: card
         };
 
         modalImg.setAttribute('src', imgSrc);
@@ -182,28 +183,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    modalAddBtn.addEventListener('click', () => {
+    modalAddBtn.addEventListener('click', async () => {
         if (!productoActual) return;
 
         const cantidad = Math.max(1, parseInt(modalQtyInput.value, 10) || 1);
         const talla = modalTallaSelect.value;
         const color = modalColorSelect.value;
+        const card = productoActual.card;
+        const productId = card ? Number(card.getAttribute('data-product-id')) : 0;
 
-        const cart = JSON.parse(localStorage.getItem('skate_cart')) || [];
+        if (!productId) {
+            alert('Este producto todavía no está vinculado a la base de datos.');
+            return;
+        }
 
-        cart.push({
-            img: productoActual.imgSrc,
-            title: productoActual.nombre,
-            price: productoActual.precio,
-            quantity: cantidad,
-            talla: talla,
-            color: color
-        });
+        modalAddBtn.disabled = true;
 
-        localStorage.setItem('skate_cart', JSON.stringify(cart));
+        try {
+            const response = await fetch('../php/api/cart.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    action: 'add',
+                    product_id: productId,
+                    talla,
+                    color,
+                    quantity: cantidad
+                })
+            });
 
-        cerrarModal();
-        alert('"' + productoActual.nombre + '" se agregó al carrito.');
+            const data = await response.json();
+
+            if (response.status === 401) {
+                alert('Debes iniciar sesión para agregar productos al carrito.');
+                window.location.href = 'iniciarsesion.html';
+                return;
+            }
+
+            if (!response.ok || !data.ok) {
+                alert(data.mensaje || 'No se pudo agregar el producto.');
+                return;
+            }
+
+            cerrarModal();
+            alert('"' + productoActual.nombre + '" se agregó al carrito.');
+        } catch (error) {
+            alert('No se pudo conectar con PHP/MySQL. Verifica XAMPP.');
+        } finally {
+            modalAddBtn.disabled = false;
+        }
     });
 
 });

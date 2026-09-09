@@ -113,40 +113,88 @@ function toggleVisibility(inputId, btn) {
             }
         }
 
-        function validarFormulario(event) {
-            event.preventDefault();
+        async function actualizarSesionDesdeServidor() {
+    try {
+        const response = await fetch('../php/auth/session.php', { credentials: 'same-origin' });
+        const data = await response.json();
 
-            const email = document.getElementById('email').value;
-            const confirmEmail = document.getElementById('confirmEmail').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (email !== confirmEmail) {
-                alert("Los correos electrónicos no coinciden.");
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                alert("Las contraseñas no coinciden.");
-                return false;
-            }
-
-            
-            const usuario = document.getElementById('usuario').value;
-            if (usuario) {
-                localStorage.setItem('skate_username', usuario);
-            }
-
-            window.location.href = 'iniciarsesion.html';
-            return true;
+        if (data.autenticado && data.usuario) {
+            const nombre = data.usuario.usuario || data.usuario.nombre || '';
+            localStorage.setItem(SKATE_USERNAME_KEY, nombre);
+            document.querySelectorAll('.username').forEach(span => {
+                span.textContent = nombre || 'Mi Cuenta';
+            });
         }
+    } catch (error) {
+        // Si PHP no está disponible, la página conserva el nombre local guardado.
+    }
+}
+
+document.addEventListener('DOMContentLoaded', actualizarSesionDesdeServidor);
+
+async function validarFormulario(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const confirmEmail = document.getElementById('confirmEmail').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (email !== confirmEmail) {
+        alert('Los correos electrónicos no coinciden.');
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Las contraseñas no coinciden.');
+        return false;
+    }
+
+    const nombre = form.querySelector('input[name="nombre"]')?.value.trim() || '';
+    const usuario = document.getElementById('usuario')?.value.trim() || '';
+    const telefono = form.querySelector('input[name="telefono"]')?.value.trim() || '';
+    const fechaNacimiento = form.querySelector('input[name="fecha_nacimiento"]')?.value || '';
+
+    try {
+        const response = await fetch('../php/auth/register.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                nombre,
+                usuario,
+                telefono,
+                fecha_nacimiento: fechaNacimiento,
+                correo: email,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            alert(data.mensaje || 'No se pudo completar el registro.');
+            return false;
+        }
+
+        localStorage.setItem(SKATE_USERNAME_KEY, data.usuario);
+        alert('Registro exitoso. Ahora puedes iniciar sesión.');
+        window.location.href = 'iniciarsesion.html';
+    } catch (error) {
+        alert('No se pudo conectar con el servidor PHP. Asegúrate de tener Apache y MySQL encendidos en XAMPP.');
+    }
+
+    return false;
+}
+
 const registroForm = document.getElementById('email') ? document.getElementById('email').form : null;
 if (registroForm) {
     registroForm.addEventListener('submit', validarFormulario);
 
-    const nombreCompleto = registroForm.querySelector('input[placeholder="Nombre Completo..."]');
-    const telefono = registroForm.querySelector('input[type="tel"]');
-    const fechaNacimiento = registroForm.querySelector('input[placeholder="Fecha de Nacimiento..."]');
+    const nombreCompleto = registroForm.querySelector('input[name="nombre"]');
+    const telefono = registroForm.querySelector('input[name="telefono"]');
+    const fechaNacimiento = registroForm.querySelector('input[name="fecha_nacimiento"]');
 
     if (nombreCompleto) {
         nombreCompleto.addEventListener('input', () => {
@@ -166,18 +214,14 @@ if (registroForm) {
         });
 
         fechaNacimiento.addEventListener('blur', () => {
-            if (!fechaNacimiento.value) {
-                fechaNacimiento.type = 'text';
-            }
+            if (!fechaNacimiento.value) fechaNacimiento.type = 'text';
         });
     }
 
     registroForm.querySelectorAll('.toggle-password').forEach((button) => {
         button.addEventListener('click', () => {
             const input = button.parentElement.querySelector('input');
-            if (input) {
-                toggleVisibility(input.id, button);
-            }
+            if (input) toggleVisibility(input.id, button);
         });
     });
 
@@ -189,28 +233,53 @@ if (registroForm) {
     }
 }
 
-function validarLogin(event) {
-            event.preventDefault();
+async function validarLogin(event) {
+    event.preventDefault();
 
-            const userInput = document.getElementById('userInput').value.trim();
+    const userInput = document.getElementById('userInput').value.trim();
+    const password = document.getElementById('password').value;
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const usernameRegex = /^[a-zA-Z0-9]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
 
-            const esCorreoValido = emailRegex.test(userInput);
-            const esUsuarioValido = usernameRegex.test(userInput);
+    const esCorreoValido = emailRegex.test(userInput);
+    const esUsuarioValido = usernameRegex.test(userInput);
 
-            if (!esCorreoValido && !esUsuarioValido) {
-                alert("Ingresa un correo electrónico válido (con @) o un usuario que solo contenga letras y números sin caracteres especiales.");
-                return false;
-            }
+    if (!esCorreoValido && !esUsuarioValido) {
+        alert('Ingresa un correo electrónico válido (con @) o un usuario que solo contenga letras y números sin caracteres especiales.');
+        return false;
+    }
 
-            
-            localStorage.setItem('skate_username', userInput);
+    try {
+        const response = await fetch('../php/auth/login.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                usuario_correo: userInput,
+                password
+            })
+        });
 
-            window.location.href = 'principal.html';
-            return true;
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            alert(data.mensaje || 'No se pudo iniciar sesión.');
+            return false;
         }
+
+        const usuario = data.usuario.usuario || data.usuario.nombre;
+        localStorage.setItem(SKATE_USERNAME_KEY, usuario);
+        localStorage.setItem(SKATE_EMAIL_KEY, data.usuario.correo || '');
+        localStorage.removeItem('skate_cart');
+        window.location.href = 'principal.html';
+    } catch (error) {
+        alert('No se pudo conectar con el servidor PHP. Asegúrate de tener Apache y MySQL encendidos en XAMPP.');
+    }
+
+    return false;
+}
+
 const loginForm = document.getElementById('userInput') ? document.getElementById('userInput').form : null;
 if (loginForm) {
     loginForm.addEventListener('submit', validarLogin);
@@ -218,9 +287,7 @@ if (loginForm) {
     loginForm.querySelectorAll('.toggle-password').forEach((button) => {
         button.addEventListener('click', () => {
             const input = button.parentElement.querySelector('input');
-            if (input) {
-                toggleVisibility(input.id, button);
-            }
+            if (input) toggleVisibility(input.id, button);
         });
     });
 
@@ -232,6 +299,7 @@ if (loginForm) {
     }
 }
 
+// ---------------- PERFIL / AJUSTES ----------------
 if (document.getElementById('settingsSaveBtn')) {
     const sidebarItems = document.querySelectorAll('.settings-sidebar-item');
     const panelPerfil = document.getElementById('panelPerfil');
@@ -243,7 +311,6 @@ if (document.getElementById('settingsSaveBtn')) {
     sidebarItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
-
             sidebarItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
 
@@ -257,56 +324,125 @@ if (document.getElementById('settingsSaveBtn')) {
         });
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('settingsUsername').value = localStorage.getItem('skate_username') || '';
-        document.getElementById('settingsEmail').value = localStorage.getItem('skate_user_email') || '';
-        document.getElementById('settingsBio').value = localStorage.getItem('skate_user_bio') || '';
-    });
+    async function cargarPerfil() {
+        try {
+            const response = await fetch('../php/auth/profile.php', {credentials: 'same-origin'});
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                if (response.status === 401) {
+                    alert('Debes iniciar sesión para acceder a tu perfil.');
+                    window.location.href = 'iniciarsesion.html';
+                }
+                return;
+            }
+
+            document.getElementById('settingsUsername').value = data.usuario.usuario || '';
+            document.getElementById('settingsEmail').value = data.usuario.correo || '';
+            document.getElementById('settingsBio').value = data.usuario.bio || '';
+
+            localStorage.setItem(SKATE_USERNAME_KEY, data.usuario.usuario || '');
+            localStorage.setItem(SKATE_EMAIL_KEY, data.usuario.correo || '');
+            localStorage.setItem(SKATE_BIO_KEY, data.usuario.bio || '');
+            actualizarNombreUsuarioEnHeader();
+        } catch (error) {
+            // Mantener valores locales si el servidor no responde.
+            document.getElementById('settingsUsername').value = localStorage.getItem(SKATE_USERNAME_KEY) || '';
+            document.getElementById('settingsEmail').value = localStorage.getItem(SKATE_EMAIL_KEY) || '';
+            document.getElementById('settingsBio').value = localStorage.getItem(SKATE_BIO_KEY) || '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarPerfil);
 
     const settingsSaveBtn = document.getElementById('settingsSaveBtn');
     const settingsSaveMsg = document.getElementById('settingsSaveMsg');
 
-    settingsSaveBtn.addEventListener('click', () => {
+    settingsSaveBtn.addEventListener('click', async () => {
         const nuevoUsuario = document.getElementById('settingsUsername').value.trim();
-        const nuevoEmail = document.getElementById('settingsEmail').value.trim();
+        const nuevoEmail = document.getElementById('settingsEmail').value.trim().toLowerCase();
         const nuevaBio = document.getElementById('settingsBio').value.trim();
 
-        localStorage.setItem('skate_username', nuevoUsuario);
-        localStorage.setItem('skate_user_email', nuevoEmail);
-        localStorage.setItem('skate_user_bio', nuevaBio);
+        try {
+            const response = await fetch('../php/auth/profile.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    usuario: nuevoUsuario,
+                    correo: nuevoEmail,
+                    bio: nuevaBio
+                })
+            });
 
-        if (typeof actualizarNombreUsuarioEnHeader === 'function') {
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                settingsSaveMsg.textContent = data.mensaje || 'No se pudieron guardar los cambios.';
+                return;
+            }
+
+            localStorage.setItem(SKATE_USERNAME_KEY, nuevoUsuario);
+            localStorage.setItem(SKATE_EMAIL_KEY, nuevoEmail);
+            localStorage.setItem(SKATE_BIO_KEY, nuevaBio);
             actualizarNombreUsuarioEnHeader();
+
+            settingsSaveMsg.textContent = 'Cambios guardados.';
+            setTimeout(() => { settingsSaveMsg.textContent = ''; }, 2500);
+        } catch (error) {
+            settingsSaveMsg.textContent = 'No se pudo conectar con el servidor.';
         }
-
-        settingsSaveMsg.textContent = 'Cambios guardados.';
-        setTimeout(() => { settingsSaveMsg.textContent = ''; }, 2500);
     });
-
 }
 
+// ---------------- CARRITO MYSQL ----------------
 if (document.getElementById('cartItemsContainer')) {
-const SHIPPING_COST = 10000;
-
-    
+    const SHIPPING_COST = 10000;
     const VALID_PROMO_CODE = 'SkateInfinity2026';
     const PROMO_DISCOUNT_RATE = 0.05;
     let appliedPromoCode = null;
+    let cart = [];
 
-    function getCart() {
-        return JSON.parse(localStorage.getItem('skate_cart')) || [];
+    function formatMoney(value) {
+        return Number(value).toLocaleString('es-CO') + '$';
     }
 
-    function saveCart(cart) {
-        localStorage.setItem('skate_cart', JSON.stringify(cart));
+    function setCartMessage(text, type='') {
+        const msg = document.getElementById('promoCodeMsg');
+        if (msg) {
+            msg.textContent = text;
+            msg.className = 'promo-code-msg' + (type ? ' ' + type : '');
+        }
+    }
+
+    async function cargarCarrito() {
+        try {
+            const response = await fetch('../php/api/cart.php', {credentials: 'same-origin'});
+            const data = await response.json();
+
+            if (response.status === 401) {
+                alert('Debes iniciar sesión para usar el carrito.');
+                window.location.href = 'iniciarsesion.html';
+                return;
+            }
+
+            if (!response.ok || !data.ok) {
+                setCartMessage(data.mensaje || 'No se pudo cargar el carrito.', 'error');
+                return;
+            }
+
+            cart = data.carrito || [];
+            renderCart();
+        } catch (error) {
+            setCartMessage('No se pudo conectar con PHP/MySQL.', 'error');
+        }
     }
 
     function renderCart() {
-        const cart = getCart();
         const container = document.getElementById('cartItemsContainer');
         const emptyMsg = document.getElementById('emptyCartMsg');
         const discountRow = document.getElementById('summaryDiscountRow');
-        
+
         container.innerHTML = '';
 
         if (cart.length === 0) {
@@ -320,8 +456,8 @@ const SHIPPING_COST = 10000;
         emptyMsg.style.display = 'none';
         let subtotalAccumulator = 0;
 
-        cart.forEach((item, index) => {
-            const itemSubtotal = item.price * item.quantity;
+        cart.forEach((item) => {
+            const itemSubtotal = Number(item.price) * Number(item.cantidad);
             subtotalAccumulator += itemSubtotal;
 
             const tr = document.createElement('tr');
@@ -331,21 +467,21 @@ const SHIPPING_COST = 10000;
                         <img src="${item.img}" alt="${item.title}" class="cart-item-img">
                         <div>
                             <span class="cart-item-title">${item.title}</span>
-                            ${(item.talla || item.color) ? `<div class="cart-item-variant">${item.talla ? 'Talla: ' + item.talla : ''}${item.talla && item.color ? ' · ' : ''}${item.color ? 'Color: ' + item.color : ''}</div>` : ''}
+                            <div class="cart-item-variant">Talla: ${item.talla} · Color: ${item.color}</div>
                         </div>
                     </div>
                 </td>
-                <td>${item.price.toLocaleString('es-CO')}$</td>
+                <td>${formatMoney(item.price)}</td>
                 <td>
                     <div class="qty-controls">
-                        <button class="qty-btn" data-cart-action="decrease" data-index="${index}">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="qty-btn" data-cart-action="increase" data-index="${index}">+</button>
+                        <button class="qty-btn" data-cart-action="decrease" data-item-id="${item.id_item_carrito}">-</button>
+                        <span>${item.cantidad}</span>
+                        <button class="qty-btn" data-cart-action="increase" data-item-id="${item.id_item_carrito}">+</button>
                     </div>
                 </td>
-                <td>${itemSubtotal.toLocaleString('es-CO')}$</td>
+                <td>${formatMoney(itemSubtotal)}</td>
                 <td>
-                    <button class="btn-remove" data-cart-action="remove" data-index="${index}" title="Eliminar producto">✕</button>
+                    <button class="btn-remove" data-cart-action="remove" data-item-id="${item.id_item_carrito}" title="Eliminar producto">✕</button>
                 </td>
             `;
             container.appendChild(tr);
@@ -357,38 +493,64 @@ const SHIPPING_COST = 10000;
 
         if (discountAmount > 0) {
             discountRow.style.display = 'flex';
-            document.getElementById('summaryDiscount').textContent = `-${discountAmount.toLocaleString('es-CO')}$`;
+            document.getElementById('summaryDiscount').textContent = `-${formatMoney(discountAmount)}`;
         } else {
             discountRow.style.display = 'none';
         }
 
-        document.getElementById('summarySubtotal').textContent = `${subtotalAccumulator.toLocaleString('es-CO')}$`;
-        document.getElementById('summaryTotal').textContent = `${(subtotalAccumulator - discountAmount + SHIPPING_COST).toLocaleString('es-CO')}$`;
+        document.getElementById('summarySubtotal').textContent = formatMoney(subtotalAccumulator);
+        document.getElementById('summaryTotal').textContent = formatMoney(subtotalAccumulator - discountAmount + SHIPPING_COST);
     }
+
+    async function modificarCarrito(action, itemId, change=0) {
+        try {
+            const response = await fetch('../php/api/cart.php', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                credentials: 'same-origin',
+                body: JSON.stringify({action, item_id: itemId, change})
+            });
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                setCartMessage(data.mensaje || 'No se pudo actualizar el carrito.', 'error');
+                return;
+            }
+
+            cart = data.carrito || [];
+            renderCart();
+        } catch (error) {
+            setCartMessage('No se pudo conectar con el servidor.', 'error');
+        }
+    }
+
+    document.getElementById('cartItemsContainer').addEventListener('click', (e) => {
+        const button = e.target.closest('[data-cart-action]');
+        if (!button) return;
+
+        const itemId = Number(button.dataset.itemId);
+        const action = button.dataset.cartAction;
+
+        if (action === 'decrease') modificarCarrito('update', itemId, -1);
+        if (action === 'increase') modificarCarrito('update', itemId, 1);
+        if (action === 'remove') modificarCarrito('remove', itemId);
+    });
 
     const applyPromoBtn = document.getElementById('applyPromoBtn');
     const promoCodeInput = document.getElementById('promoCodeInput');
-    const promoCodeMsg = document.getElementById('promoCodeMsg');
 
     function aplicarCodigoEspecial() {
         const codigoEscrito = promoCodeInput.value.trim();
 
         if (codigoEscrito === '') {
             appliedPromoCode = null;
-            promoCodeMsg.textContent = '';
-            promoCodeMsg.className = 'promo-code-msg';
-            renderCart();
-            return;
-        }
-
-        if (codigoEscrito === VALID_PROMO_CODE) {
+            setCartMessage('');
+        } else if (codigoEscrito === VALID_PROMO_CODE) {
             appliedPromoCode = codigoEscrito;
-            promoCodeMsg.textContent = 'Código aplicado: 5% de descuento sobre el subtotal.';
-            promoCodeMsg.className = 'promo-code-msg success';
+            setCartMessage('Código aplicado: 5% de descuento sobre el subtotal.', 'success');
         } else {
             appliedPromoCode = null;
-            promoCodeMsg.textContent = 'Código no válido.';
-            promoCodeMsg.className = 'promo-code-msg error';
+            setCartMessage('Código no válido.', 'error');
         }
 
         renderCart();
@@ -404,50 +566,48 @@ const SHIPPING_COST = 10000;
         });
     }
 
-    function updateQuantity(index, change) {
-        const cart = getCart();
-        if (cart[index]) {
-            cart[index].quantity += change;
-            if (cart[index].quantity <= 0) {
-                cart.splice(index, 1);
+    const checkoutButton = document.querySelector('.checkout-btn');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', async () => {
+            if (!cart.length) {
+                alert('Tu carrito está vacío.');
+                return;
             }
-            saveCart(cart);
-            renderCart();
-        }
+
+            const direccion = prompt('Ingresa la dirección de envío:');
+            if (!direccion || !direccion.trim()) return;
+
+            const metodo = prompt('Método de pago (por ahora se registrará como pendiente):', 'Pendiente') || 'Pendiente';
+
+            try {
+                const response = await fetch('../php/api/cart.php', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        action: 'checkout',
+                        direccion: direccion.trim(),
+                        metodo_pago: metodo.trim(),
+                        promo_code: appliedPromoCode || ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.ok) {
+                    alert(data.mensaje || 'No se pudo registrar el pedido.');
+                    return;
+                }
+
+                alert('Pedido #' + data.id_pedido + ' registrado correctamente.');
+                cart = [];
+                renderCart();
+                cargarCarrito();
+            } catch (error) {
+                alert('No se pudo conectar con el servidor.');
+            }
+        });
     }
 
-    function removeItem(index) {
-        const cart = getCart();
-        cart.splice(index, 1);
-        saveCart(cart);
-        renderCart();
-    }
-
-    document.addEventListener('DOMContentLoaded', renderCart);
-
-const cartItemsContainer = document.getElementById('cartItemsContainer');
-if (cartItemsContainer) {
-    cartItemsContainer.addEventListener('click', (e) => {
-        const button = e.target.closest('[data-cart-action]');
-        if (!button) return;
-
-        const index = Number(button.dataset.index);
-        const action = button.dataset.cartAction;
-
-        if (action === 'decrease') {
-            updateQuantity(index, -1);
-        } else if (action === 'increase') {
-            updateQuantity(index, 1);
-        } else if (action === 'remove') {
-            removeItem(index);
-        }
-    });
-}
-
-const checkoutButton = document.querySelector('.checkout-btn');
-if (checkoutButton) {
-    checkoutButton.addEventListener('click', () => {
-        alert('Funcionalidad de pago en desarrollo');
-    });
-}
+    document.addEventListener('DOMContentLoaded', cargarCarrito);
 }
